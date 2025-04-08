@@ -105,19 +105,24 @@
       background-color: #166253;
     }
 
+    .card-back-content {
+      display: none;
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    .card-container.flipped .card-back-content {
+      display: block;
+    }
+
     .sub-card {
       display: none;
-      text-align: left;
-      padding: 1rem;
-      background: #F4E1C1; /* beige crème */
-      color: #333;
-      border-radius: 1rem;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 
     .sub-card.active {
       display: block;
     }
+
   </style>
 </head>
 <body>
@@ -134,82 +139,71 @@
       <h1 style="position: relative; top: -25px;">Théophile</h1> <!-- Prénom au même niveau que sur la face avant -->
       <img src="https://raw.githubusercontent.com/soteo3d/QRcard/media/oui.JPG" alt="Photo de Théophile" class="profile-pic">
       <p>On ne se serait pas croisé ?</p>
-      <a class="btn" href="https://www.instagram.com/theophile_drd/profilecard/" target="_blank">Insta ?</a>
-
-      <!-- Sous-cartes -->
-      <div id="subCardMoi" class="sub-card">
-        <h2>Moi</h2>
-        <p>Âge: 27 ans</p>
-        <p>Lieu: Saint-Germain</p>
-        <p>Profession: Finance 💼</p>
-        <p>Personnalité: Drôle, attentionné, aventureux, calme, créatif</p>
-        <button class="btn" id="backToMain">Retour</button>
-      </div>
-
-      <div id="subCardPassion" class="sub-card">
-        <h2>Passions</h2>
-        <p>Moto 🏍️</p>
-        <p>Cuisine 🍳</p>
-        <p>Astronomie 🔭</p>
-        <p>Musique 🎶</p>
-        <p>Jeux vidéo 🎮</p>
-        <p>Épicurien moderne 🍷</p>
-        <button class="btn" id="backToMain2">Retour</button>
-      </div>
+      <button class="btn" onclick="showSubCard('moi')">Moi</button>
+      <button class="btn" onclick="showSubCard('passion')">Passion</button>
+      <button class="btn" onclick="showSubCard('insta')">Instagram</button>
     </div>
+  </div>
+
+  <!-- Sub-cards -->
+  <div class="sub-card" id="moi">
+    <h1>Moi</h1>
+    <p>Âge: 27</p>
+    <p>Lieu: Saint-Germain</p>
+    <p>Travail: Finance</p>
+    <p>Personnalité: Drôle, Attentionné, Aventureux, Calme, Créatif</p>
+    <button class="btn" onclick="goBack()">Retour</button>
+  </div>
+
+  <div class="sub-card" id="passion">
+    <h1>Passion</h1>
+    <p>Moto, Cuisine, Astronomie, Musique, Jeux Vidéo, Epicurien Moderne</p>
+    <button class="btn" onclick="goBack()">Retour</button>
+  </div>
+
+  <div class="sub-card" id="insta">
+    <h1>Instagram</h1>
+    <a class="btn" href="https://www.instagram.com/theophile_drd/profilecard/" target="_blank">Insta ?</a>
+    <button class="btn" onclick="goBack()">Retour</button>
   </div>
 
    <!-- Son de clic -->
   <audio id="clickSound" src="https://www.myinstants.com/media/sounds/rizz-sound-effect.mp3" preload="auto"></audio> 
 
- <script>
-  const card = document.getElementById('flipCard');
-  const clickSound = document.getElementById('clickSound');
-  const subCardMoi = document.getElementById('subCardMoi');
-  const subCardPassion = document.getElementById('subCardPassion');
-  const backToMain = document.getElementById('backToMain');
-  const backToMain2 = document.getElementById('backToMain2');
+  <script>
+    const card = document.getElementById('flipCard');
+    const clickSound = document.getElementById('clickSound');
 
-  // Jouer le son au clic sur la carte principale
-  card.addEventListener('click', () => {
-    card.classList.toggle('flipped');
-    if (clickSound.readyState >= 2) { 
-      clickSound.play(); 
-    } else {
-      console.error('Le fichier audio n\'est pas prêt à être joué.');
+    // Ajout d'un événement pour jouer le son au clic
+    card.addEventListener('click', () => {
+      card.classList.toggle('flipped');
+      if (clickSound.readyState >= 2) { // Vérifie si l'audio est prêt
+        clickSound.play(); // Joue le son à chaque clic
+      } else {
+        console.error('Le fichier audio n\'est pas prêt à être joué.');
+      }
+    });
+
+    function showSubCard(cardId) {
+      // Cache toutes les sous-cartes
+      const subCards = document.querySelectorAll('.sub-card');
+      subCards.forEach(card => card.classList.remove('active'));
+
+      // Affiche la sous-carte sélectionnée
+      const subCard = document.getElementById(cardId);
+      subCard.classList.add('active');
+      card.classList.add('flipped');  // Flips the main card to show sub-cards
     }
-  });
 
-  // Afficher la sous-carte "Moi"
-  function showMoi() {
-    subCardMoi.classList.add('active');
-  }
+    function goBack() {
+      // Cache les sous-cartes et revient à la carte principale
+      const subCards = document.querySelectorAll('.sub-card');
+      subCards.forEach(card => card.classList.remove('active'));
 
-  // Afficher la sous-carte "Passion"
-  function showPassion() {
-    subCardPassion.classList.add('active');
-  }
-
-  // Retour à la carte principale
-  backToMain.addEventListener('click', () => {
-    subCardMoi.classList.remove('active');
-    card.classList.remove('flipped');
-  });
-
-  backToMain2.addEventListener('click', () => {
-    subCardPassion.classList.remove('active');
-    card.classList.remove('flipped');
-  });
-
-  // Ajouter les clics sur les boutons
-  document.querySelector('.btn').addEventListener('click', () => {
-    showMoi();
-  });
-
-  document.querySelector('.btn').addEventListener('click', () => {
-    showPassion();
-  });
-</script>
+      // Revert the main card back to normal
+      card.classList.remove('flipped');
+    }
+  </script>
 
 </body>
 </html>
