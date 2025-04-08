@@ -4,8 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Théophile</title>
-  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <style>
+    /* ===== CSS ===== */
     * {
       box-sizing: border-box;
     }
@@ -25,8 +27,8 @@
 
     .card-container {
       width: 90%;
-      max-width: 350px;
-      height: 480px;
+      max-width: 360px;
+      height: 500px;
       position: relative;
       transform-style: preserve-3d;
       transition: transform 0.6s ease;
@@ -37,10 +39,11 @@
       transform: rotateY(180deg);
     }
 
-    .card {
+    .card, .sub-card {
       position: absolute;
       width: 100%;
       height: 100%;
+      background: white;
       border-radius: 2rem;
       box-shadow: 0 8px 20px rgba(0,0,0,0.1);
       display: flex;
@@ -54,12 +57,34 @@
 
     .card.front {
       background: linear-gradient(135deg, #1A3C40, #0D2F32);
+      z-index: 1;
     }
 
     .card.back {
       transform: rotateY(180deg);
       background: linear-gradient(135deg, #0A1D1C, #071614);
-      padding-top: 1rem;
+      z-index: 2;
+    }
+
+    .sub-card {
+      background: #0F2A2B;
+      z-index: 3;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: #F4E1C1;
+      margin-bottom: 0.5rem;
+      margin-top: 0;
+    }
+
+    p {
+      font-size: 1.2rem;
+      color: #F4E1C1;
+      margin-bottom: 1.5rem;
     }
 
     .profile-pic {
@@ -71,29 +96,15 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     }
 
-    h1 {
-      font-size: 2.5rem;
-      color: #F4E1C1;
-      margin-top: 0;
-      margin-bottom: 0.5rem;
-      position: relative;
-      top: -25px;
-    }
-
-    p {
-      font-size: 1.2rem;
-      color: #F4E1C1;
-      margin-bottom: 2rem;
-    }
-
     .btn {
       display: inline-block;
-      padding: 0.75rem 1.5rem;
+      padding: 0.6rem 1.2rem;
       font-size: 1rem;
       border-radius: 999px;
       text-decoration: none;
       background-color: #1B6B65;
       color: white;
+      margin: 0.3rem;
       transition: background 0.3s ease;
     }
 
@@ -102,62 +113,94 @@
     }
 
     .hidden {
-      opacity: 0;
-      transform: translateY(20px);
+      display: none !important;
     }
   </style>
 </head>
 <body>
 
+  <!-- === HTML === -->
   <div class="card-container" id="flipCard">
-    <!-- Recto -->
+    <!-- Face avant -->
     <div class="card front">
-      <h1>Théophile</h1>
+      <h1 style="position: relative; top: -25px;">Théophile</h1>
       <p>Appuie pour découvrir ✨</p>
     </div>
 
-    <!-- Verso -->
-    <div class="card back">
-      <h1 class="hidden">Théophile</h1>
-      <img src="https://raw.githubusercontent.com/soteo3d/QRcard/media/oui.JPG" alt="Photo de Théophile" class="profile-pic hidden" />
-      <p class="hidden">On ne se serait pas croisé ?</p>
-      <a class="btn hidden" href="https://www.instagram.com/theophile_drd/profilecard/" target="_blank">Insta ?</a>
+    <!-- Face arrière principale -->
+    <div class="card back" id="backFace">
+      <h1 style="position: relative; top: -25px;">Théophile</h1>
+      <img src="https://raw.githubusercontent.com/soteo3d/QRcard/media/oui.JPG" alt="Photo de Théophile" class="profile-pic">
+      <p>On ne se serait pas croisé ?</p>
+      <a class="btn" href="https://www.instagram.com/theophile_drd/profilecard/" target="_blank">Insta ?</a>
+      <button class="btn" id="btnMoi">Moi</button>
+      <button class="btn" id="btnPassions">Passions</button>
+    </div>
+
+    <!-- Sous-carte : Moi -->
+    <div class="sub-card" id="cardMoi">
+      <h1>Moi</h1>
+      <p>27 ans<br>Saint-Germain<br>Finance 💼</p>
+      <button class="btn" onclick="showBack()">↩ Retour</button>
+    </div>
+
+    <!-- Sous-carte : Passions -->
+    <div class="sub-card" id="cardPassions">
+      <h1>Passions</h1>
+      <p>Moto 🏍️<br>Cuisine 🍳<br>Astronomie 🔭<br>Idées à la con 😅</p>
+      <button class="btn" onclick="showBack()">↩ Retour</button>
     </div>
   </div>
 
-  <!-- Audio -->
-  <audio id="clickSound" src="https://www.myinstants.com/media/sounds/rizz-sound-effect.mp3" preload="auto"></audio>
+  <!-- Son Rizz -->
+  <audio id="clickSound" src="https://assets.mixkit.co/active_storage/sfx/2929/2929-preview.mp3" preload="auto"></audio>
 
-  <!-- GSAP -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script>
+    // === JS ===
     const card = document.getElementById('flipCard');
     const clickSound = document.getElementById('clickSound');
-    const backElements = document.querySelectorAll('.card.back .hidden');
+    const backFace = document.getElementById('backFace');
+    const cardMoi = document.getElementById('cardMoi');
+    const cardPassions = document.getElementById('cardPassions');
 
-    gsap.set(backElements, { opacity: 0, y: 20 });
+    let hasFlipped = false;
 
     card.addEventListener('click', () => {
-      const isFlipped = card.classList.toggle('flipped');
-
-      if (clickSound.readyState >= 2) {
-        clickSound.currentTime = 0;
-        clickSound.play();
-      }
-
-      if (isFlipped) {
-        gsap.to(backElements, {
-          duration: 0.6,
-          opacity: 1,
-          y: 0,
-          display: 'flex',
-          stagger: 0.1,
-          ease: 'power2.out'
-        });
-      } else {
-        gsap.set(backElements, { opacity: 0, y: 20 });
+      // Retour à la vue recto/verso
+      if (!card.classList.contains('flipped')) {
+        card.classList.add('flipped');
+        if (!hasFlipped) {
+          clickSound.play();
+          hasFlipped = true;
+        }
       }
     });
+
+    document.getElementById('btnMoi').addEventListener('click', () => {
+      showCard(cardMoi);
+    });
+
+    document.getElementById('btnPassions').addEventListener('click', () => {
+      showCard(cardPassions);
+    });
+
+    function showCard(cardToShow) {
+      // Cache tout
+      backFace.style.display = 'none';
+      cardMoi.style.display = 'none';
+      cardPassions.style.display = 'none';
+
+      // Animation GSAP entrée
+      cardToShow.style.display = 'flex';
+      gsap.fromTo(cardToShow, {opacity: 0, y: 50}, {opacity: 1, y: 0, duration: 0.5});
+    }
+
+    function showBack() {
+      cardMoi.style.display = 'none';
+      cardPassions.style.display = 'none';
+      backFace.style.display = 'flex';
+      gsap.fromTo(backFace, {opacity: 0, y: 30}, {opacity: 1, y: 0, duration: 0.4});
+    }
   </script>
 
 </body>
