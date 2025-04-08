@@ -127,15 +127,19 @@
   <!-- Son de clic -->
   <audio id="clickSound" src="https://github.com/soteo3d/QRcard/blob/main/traimory-mega-horn-angry-siren-f-cinematic-trailer-sound-effects-193408.mp3" preload="auto"></audio> 
 
-  <script>
-    const card = document.getElementById('flipCard');
-    const clickSound = document.getElementById('clickSound');
-    
-    // Ajout d'un événement pour jouer le son au clic
-    card.addEventListener('click', () => {
-      card.classList.toggle('flipped');
+ <script>
+  const card = document.getElementById('flipCard');
+  const clickSound = document.getElementById('clickSound');
+
+  // Ajout d'un événement pour jouer le son au clic
+  card.addEventListener('click', () => {
+    card.classList.toggle('flipped');
+    if (clickSound.readyState >= 2) { // Vérifie si l'audio est prêt
       clickSound.play(); // Joue le son à chaque clic
-    });
-  </script>
+    } else {
+      console.error('Le fichier audio n\'est pas prêt à être joué.');
+    }
+  });
+</script>
 </body>
 </html>
