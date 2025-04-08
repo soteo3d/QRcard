@@ -7,7 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <style>
-    /* ===== CSS ===== */
+    /* === CSS === */
     * {
       box-sizing: border-box;
     }
@@ -17,7 +17,6 @@
       padding: 0;
       font-family: 'Raleway', sans-serif;
       background: #4DB6AC;
-      color: #333;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -30,48 +29,35 @@
       max-width: 360px;
       height: 500px;
       position: relative;
-      transform-style: preserve-3d;
       transition: transform 0.6s ease;
-      cursor: pointer;
-    }
-
-    .card-container.flipped {
-      transform: rotateY(180deg);
     }
 
     .card, .sub-card {
       position: absolute;
       width: 100%;
       height: 100%;
-      background: white;
       border-radius: 2rem;
       box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-      display: flex;
+      display: none;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      backface-visibility: hidden;
       padding: 2rem;
       text-align: center;
+      backface-visibility: hidden;
     }
 
     .card.front {
       background: linear-gradient(135deg, #1A3C40, #0D2F32);
-      z-index: 1;
+      display: flex;
     }
 
     .card.back {
-      transform: rotateY(180deg);
       background: linear-gradient(135deg, #0A1D1C, #071614);
-      z-index: 2;
     }
 
     .sub-card {
       background: #0F2A2B;
-      z-index: 3;
-      display: none;
-      flex-direction: column;
-      justify-content: center;
     }
 
     h1 {
@@ -111,24 +97,20 @@
     .btn:hover {
       background-color: #166253;
     }
-
-    .hidden {
-      display: none !important;
-    }
   </style>
 </head>
 <body>
 
   <!-- === HTML === -->
-  <div class="card-container" id="flipCard">
-    <!-- Face avant -->
-    <div class="card front">
+  <div class="card-container" id="cardContainer">
+    <!-- Recto -->
+    <div class="card front" id="frontCard">
       <h1 style="position: relative; top: -25px;">Théophile</h1>
       <p>Appuie pour découvrir ✨</p>
     </div>
 
-    <!-- Face arrière principale -->
-    <div class="card back" id="backFace">
+    <!-- Verso -->
+    <div class="card back" id="backCard">
       <h1 style="position: relative; top: -25px;">Théophile</h1>
       <img src="https://raw.githubusercontent.com/soteo3d/QRcard/media/oui.JPG" alt="Photo de Théophile" class="profile-pic">
       <p>On ne se serait pas croisé ?</p>
@@ -137,14 +119,14 @@
       <button class="btn" id="btnPassions">Passions</button>
     </div>
 
-    <!-- Sous-carte : Moi -->
+    <!-- Sous-carte Moi -->
     <div class="sub-card" id="cardMoi">
       <h1>Moi</h1>
       <p>27 ans<br>Saint-Germain<br>Finance 💼</p>
       <button class="btn" onclick="showBack()">↩ Retour</button>
     </div>
 
-    <!-- Sous-carte : Passions -->
+    <!-- Sous-carte Passions -->
     <div class="sub-card" id="cardPassions">
       <h1>Passions</h1>
       <p>Moto 🏍️<br>Cuisine 🍳<br>Astronomie 🔭<br>Idées à la con 😅</p>
@@ -152,56 +134,50 @@
     </div>
   </div>
 
-  <!-- Son Rizz -->
-  <audio id="clickSound" src="https://assets.mixkit.co/active_storage/sfx/2929/2929-preview.mp3" preload="auto"></audio>
+  <!-- 🔊 Son -->
+  <audio id="clickSound" src="https://www.myinstants.com/media/sounds/rizz-sound-effect.mp3" preload="auto"></audio>
 
   <script>
     // === JS ===
-    const card = document.getElementById('flipCard');
-    const clickSound = document.getElementById('clickSound');
-    const backFace = document.getElementById('backFace');
+    const cardContainer = document.getElementById('cardContainer');
+    const frontCard = document.getElementById('frontCard');
+    const backCard = document.getElementById('backCard');
     const cardMoi = document.getElementById('cardMoi');
     const cardPassions = document.getElementById('cardPassions');
+    const clickSound = document.getElementById('clickSound');
 
     let hasFlipped = false;
 
-    card.addEventListener('click', () => {
-      // Retour à la vue recto/verso
-      if (!card.classList.contains('flipped')) {
-        card.classList.add('flipped');
-        if (!hasFlipped) {
-          clickSound.play();
-          hasFlipped = true;
-        }
+    cardContainer.addEventListener('click', () => {
+      if (!hasFlipped) {
+        showCard(backCard);
+        clickSound.play();
+        hasFlipped = true;
       }
     });
 
-    document.getElementById('btnMoi').addEventListener('click', () => {
+    document.getElementById('btnMoi').addEventListener('click', (e) => {
+      e.stopPropagation();
       showCard(cardMoi);
     });
 
-    document.getElementById('btnPassions').addEventListener('click', () => {
+    document.getElementById('btnPassions').addEventListener('click', (e) => {
+      e.stopPropagation();
       showCard(cardPassions);
     });
 
     function showCard(cardToShow) {
-      // Cache tout
-      backFace.style.display = 'none';
-      cardMoi.style.display = 'none';
-      cardPassions.style.display = 'none';
+      // Cacher tout
+      [frontCard, backCard, cardMoi, cardPassions].forEach(el => el.style.display = 'none');
 
-      // Animation GSAP entrée
+      // Montrer la bonne
       cardToShow.style.display = 'flex';
-      gsap.fromTo(cardToShow, {opacity: 0, y: 50}, {opacity: 1, y: 0, duration: 0.5});
+      gsap.fromTo(cardToShow, {opacity: 0, y: 40}, {opacity: 1, y: 0, duration: 0.5});
     }
 
     function showBack() {
-      cardMoi.style.display = 'none';
-      cardPassions.style.display = 'none';
-      backFace.style.display = 'flex';
-      gsap.fromTo(backFace, {opacity: 0, y: 30}, {opacity: 1, y: 0, duration: 0.4});
+      showCard(backCard);
     }
   </script>
-
 </body>
 </html>
