@@ -104,6 +104,35 @@
     .btn:hover {
       background-color: #166253;
     }
+
+    .sub-card {
+      background-color: #F4E1C1;
+      border-radius: 1rem;
+      padding: 1rem;
+      margin-top: 1rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      text-align: left;
+    }
+
+    .sub-card h2 {
+      color: #1B6B65;
+      font-size: 1.5rem;
+    }
+
+    .sub-card p {
+      color: #333;
+      font-size: 1rem;
+    }
+
+    .return-btn {
+      display: block;
+      margin-top: 20px;
+      text-align: center;
+      color: #1B6B65;
+      font-size: 1rem;
+      text-decoration: none;
+    }
   </style>
 </head>
 <body>
@@ -111,35 +140,96 @@
   <div class="card-container" id="flipCard">
     <!-- Front side (the intro) -->
     <div class="card front">
-      <h1 style="position: relative; top: -25px;">Théophile</h1> <!-- Prénom plus haut sur la face avant -->
+      <h1>Théophile</h1> <!-- Prénom plus haut sur la face avant -->
       <p>Appuie pour découvrir ✨</p>
     </div>
 
     <!-- Back side (real profile) -->
     <div class="card back">
-      <h1 style="position: relative; top: -25px;">Théophile</h1> <!-- Prénom au même niveau que sur la face avant -->
+      <h1>Théophile</h1>
       <img src="https://raw.githubusercontent.com/soteo3d/QRcard/media/oui.JPG" alt="Photo de Théophile" class="profile-pic">
       <p>On ne se serait pas croisé ?</p>
       <a class="btn" href="https://www.instagram.com/theophile_drd/profilecard/" target="_blank">Insta ?</a>
+
+      <!-- Buttons to open sub-cards -->
+      <div class="btn" id="btnMoi">Moi</div>
+      <div class="btn" id="btnPassion">Passion</div>
     </div>
   </div>
 
    <!-- Son de clic -->
   <audio id="clickSound" src="https://raw.githubusercontent.com/soteo3d/QRcard/media/son.mp3" preload="auto"></audio> 
 
- <script>
-  const card = document.getElementById('flipCard');
-  const clickSound = document.getElementById('clickSound');
+  <!-- Sub-cards -->
+  <div id="subCardsContainer" style="display: none;">
+    <!-- "Moi" Sub-card -->
+    <div class="sub-card" id="subCardMoi">
+      <h2>Moi</h2>
+      <p>Âge: 27</p>
+      <p>Lieu: Saint-Germain</p>
+      <p>Travail: Finance</p>
+      <a href="#" class="return-btn" id="returnBtnMoi">Retour</a>
+    </div>
 
-  // Ajout d'un événement pour jouer le son au clic
-  card.addEventListener('click', () => {
-    card.classList.toggle('flipped');
-    if (clickSound.readyState >= 2) { // Vérifie si l'audio est prêt
-      clickSound.play(); // Joue le son à chaque clic
-    } else {
-      console.error('Le fichier audio n\'est pas prêt à être joué.');
-    }
-  });
-</script>
+    <!-- "Passion" Sub-card -->
+    <div class="sub-card" id="subCardPassion">
+      <h2>Passions</h2>
+      <p>Moto, Cuisine, Astronomie, et... les idées à la con !</p>
+      <a href="#" class="return-btn" id="returnBtnPassion">Retour</a>
+    </div>
+
+    <!-- Instagram link -->
+    <div class="sub-card" id="subCardInsta">
+      <h2>Instagram</h2>
+      <p>Tu veux découvrir plus ?</p>
+      <a href="https://www.instagram.com/theophile_drd/profilecard/" target="_blank" class="btn">Mon Insta</a>
+      <a href="#" class="return-btn" id="returnBtnInsta">Retour</a>
+    </div>
+  </div>
+
+  <script>
+    const card = document.getElementById('flipCard');
+    const clickSound = document.getElementById('clickSound');
+    const subCardsContainer = document.getElementById('subCardsContainer');
+    const btnMoi = document.getElementById('btnMoi');
+    const btnPassion = document.getElementById('btnPassion');
+
+    const returnBtnMoi = document.getElementById('returnBtnMoi');
+    const returnBtnPassion = document.getElementById('returnBtnPassion');
+    const returnBtnInsta = document.getElementById('returnBtnInsta');
+
+    // Toggle flip of card
+    card.addEventListener('click', () => {
+      card.classList.toggle('flipped');
+      if (clickSound.readyState >= 2) {
+        clickSound.play(); // Play the sound at each click
+      }
+    });
+
+    // Show sub-cards on button click
+    btnMoi.addEventListener('click', () => {
+      subCardsContainer.style.display = 'block';
+      document.getElementById('subCardMoi').style.display = 'block';
+    });
+
+    btnPassion.addEventListener('click', () => {
+      subCardsContainer.style.display = 'block';
+      document.getElementById('subCardPassion').style.display = 'block';
+    });
+
+    // Return to main card from sub-cards
+    returnBtnMoi.addEventListener('click', () => {
+      subCardsContainer.style.display = 'none';
+    });
+
+    returnBtnPassion.addEventListener('click', () => {
+      subCardsContainer.style.display = 'none';
+    });
+
+    returnBtnInsta.addEventListener('click', () => {
+      subCardsContainer.style.display = 'none';
+    });
+  </script>
+
 </body>
 </html>
