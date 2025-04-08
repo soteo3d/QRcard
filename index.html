@@ -14,7 +14,7 @@
       margin: 0;
       padding: 0;
       font-family: 'Raleway', sans-serif;
-      background: #4DB6AC;
+      background: #4DB6AC; /* Vert élégant */
       color: #333;
       display: flex;
       justify-content: center;
@@ -26,30 +26,43 @@
     .card-container {
       width: 90%;
       max-width: 350px;
-      height: 500px;
+      height: 480px;
       position: relative;
       transform-style: preserve-3d;
       transition: transform 0.6s ease;
+      cursor: pointer;
+    }
+
+    .card-container.flipped {
+      transform: rotateY(180deg);
     }
 
     .card {
       position: absolute;
       width: 100%;
       height: 100%;
-      background: linear-gradient(135deg, #1A3C40, #0D2F32);
       border-radius: 2rem;
       box-shadow: 0 8px 20px rgba(0,0,0,0.1);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 2rem;
       backface-visibility: hidden;
-      color: #F4E1C1;
+      padding: 2rem;
       text-align: center;
     }
 
-    .card img {
+    .card.front {
+      background: linear-gradient(135deg, #1A3C40, #0D2F32);
+    }
+
+    .card.back {
+      transform: rotateY(180deg);
+      background: linear-gradient(135deg, #0A1D1C, #071614);
+      padding-top: 1rem;
+    }
+
+    .profile-pic {
       width: 120px;
       height: 120px;
       object-fit: cover;
@@ -58,103 +71,93 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     }
 
-    .btn {
-      margin: 0.5rem 0;
-      padding: 0.6rem 1.2rem;
-      background: #1B6B65;
-      color: white;
-      border-radius: 999px;
-      text-decoration: none;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-
-    .btn:hover {
-      background: #166253;
-    }
-
-    .sub-card {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border-radius: 2rem;
-      background: linear-gradient(135deg, #0A1D1C, #071614);
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      color: #F4E1C1;
-      padding: 2rem;
-      text-align: center;
-    }
-
-    .sub-card.active {
-      display: flex;
-    }
-
     h1 {
-      margin: 0;
       font-size: 2.5rem;
+      color: #F4E1C1;
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+      position: relative;
+      top: -25px;
     }
 
     p {
       font-size: 1.2rem;
+      color: #F4E1C1;
+      margin-bottom: 2rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 999px;
+      text-decoration: none;
+      background-color: #1B6B65;
+      color: white;
+      transition: background 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #166253;
+    }
+
+    .hidden {
+      opacity: 0;
+      transform: translateY(20px);
     }
   </style>
 </head>
 <body>
 
-  <div class="card-container">
-    <!-- Carte principale -->
-    <div class="card" id="mainCard">
+  <div class="card-container" id="flipCard">
+    <!-- Carte recto -->
+    <div class="card front">
       <h1>Théophile</h1>
-      <img src="https://raw.githubusercontent.com/soteo3d/QRcard/media/oui.JPG" alt="Théophile">
-      <p>On ne se serait pas croisé ?</p>
-      <div class="btn" onclick="showSubCard('moi')">Moi</div>
-      <div class="btn" onclick="showSubCard('passion')">Passion</div>
-      <a class="btn" href="https://www.instagram.com/theophile_drd/profilecard/" target="_blank">Insta ?</a>
+      <p>Appuie pour découvrir ✨</p>
     </div>
 
-    <!-- Sous-carte "Moi" -->
-    <div class="sub-card" id="subMoi" onclick="hideSubCard()">
-      <h2>Moi</h2>
-      <p>Âge : 27</p>
-      <p>J’habite à Saint-Germain</p>
-      <p>Je travaille dans la finance</p>
-    </div>
-
-    <!-- Sous-carte "Passion" -->
-    <div class="sub-card" id="subPassion" onclick="hideSubCard()">
-      <h2>Passions</h2>
-      <p>Moto 🏍️, Cuisine 👨‍🍳, Astronomie 🔭</p>
-      <p>Et les idées à la con 💡</p>
+    <!-- Carte verso -->
+    <div class="card back">
+      <h1 class="hidden">Théophile</h1>
+      <img src="https://raw.githubusercontent.com/soteo3d/QRcard/media/oui.JPG" alt="Photo de Théophile" class="profile-pic hidden">
+      <p class="hidden">On ne se serait pas croisé ?</p>
+      <a class="btn hidden" href="https://www.instagram.com/theophile_drd/profilecard/" target="_blank">Insta ?</a>
     </div>
   </div>
 
-  <!-- Son -->
-  <audio id="clickSound" src="https://raw.githubusercontent.com/soteo3d/QRcard/media/son.mp3" preload="auto"></audio>
+  <!-- Audio -->
+  <audio id="clickSound" src="https://www.myinstants.com/media/sounds/rizz-sound-effect.mp3" preload="auto"></audio>
 
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script>
+    const card = document.getElementById('flipCard');
     const clickSound = document.getElementById('clickSound');
+    const backElements = document.querySelectorAll('.card.back .hidden');
 
-    function showSubCard(cardName) {
-      document.getElementById('mainCard').style.display = 'none';
-      document.getElementById('sub' + capitalize(cardName)).classList.add('active');
-      if (clickSound.readyState >= 2) clickSound.play();
-    }
+    // Cache initialement les éléments
+    gsap.set(backElements, { opacity: 0, y: 20 });
 
-    function hideSubCard() {
-      document.getElementById('mainCard').style.display = 'flex';
-      document.querySelectorAll('.sub-card').forEach(card => {
-        card.classList.remove('active');
-      });
-    }
+    card.addEventListener('click', () => {
+      const isFlipped = card.classList.toggle('flipped');
 
-    function capitalize(str) {
-      return str.charAt(0).toUpperCase() + str.slice(1);
-    }
+      if (clickSound.readyState >= 2) {
+        clickSound.play();
+      }
+
+      if (isFlipped) {
+        gsap.fromTo(card, { scale: 0.95 }, { scale: 1, duration: 0.4, ease: "power2.out" });
+        gsap.to(backElements, {
+          duration: 0.6,
+          opacity: 1,
+          y: 0,
+          stagger: 0.1,
+          ease: "power2.out"
+        });
+      } else {
+        gsap.set(backElements, { opacity: 0, y: 20 });
+      }
+    });
   </script>
 
 </body>
