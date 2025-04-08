@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Théophile</title>
-  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     * {
       box-sizing: border-box;
@@ -14,7 +14,7 @@
       margin: 0;
       padding: 0;
       font-family: 'Raleway', sans-serif;
-      background: #4DB6AC; /* Vert élégant */
+      background: #4DB6AC;
       color: #333;
       display: flex;
       justify-content: center;
@@ -110,16 +110,16 @@
 <body>
 
   <div class="card-container" id="flipCard">
-    <!-- Carte recto -->
+    <!-- Recto -->
     <div class="card front">
       <h1>Théophile</h1>
       <p>Appuie pour découvrir ✨</p>
     </div>
 
-    <!-- Carte verso -->
+    <!-- Verso -->
     <div class="card back">
       <h1 class="hidden">Théophile</h1>
-      <img src="https://raw.githubusercontent.com/soteo3d/QRcard/media/oui.JPG" alt="Photo de Théophile" class="profile-pic hidden">
+      <img src="https://raw.githubusercontent.com/soteo3d/QRcard/media/oui.JPG" alt="Photo de Théophile" class="profile-pic hidden" />
       <p class="hidden">On ne se serait pas croisé ?</p>
       <a class="btn hidden" href="https://www.instagram.com/theophile_drd/profilecard/" target="_blank">Insta ?</a>
     </div>
@@ -135,24 +135,24 @@
     const clickSound = document.getElementById('clickSound');
     const backElements = document.querySelectorAll('.card.back .hidden');
 
-    // Cache initialement les éléments
     gsap.set(backElements, { opacity: 0, y: 20 });
 
     card.addEventListener('click', () => {
       const isFlipped = card.classList.toggle('flipped');
 
       if (clickSound.readyState >= 2) {
+        clickSound.currentTime = 0;
         clickSound.play();
       }
 
       if (isFlipped) {
-        gsap.fromTo(card, { scale: 0.95 }, { scale: 1, duration: 0.4, ease: "power2.out" });
         gsap.to(backElements, {
           duration: 0.6,
           opacity: 1,
           y: 0,
+          display: 'flex',
           stagger: 0.1,
-          ease: "power2.out"
+          ease: 'power2.out'
         });
       } else {
         gsap.set(backElements, { opacity: 0, y: 20 });
